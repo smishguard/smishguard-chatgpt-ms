@@ -1,9 +1,6 @@
 from flask import Flask, jsonify, request
 from openai import OpenAI
 from datetime import datetime
-from model.MensajeSMS import MensajeSMS
-from model.Alerta import Alerta
-from model.Analisis import Analisis
 import json
 import requests  # Importa la biblioteca requests para realizar solicitudes HTTP
 
