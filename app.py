@@ -53,8 +53,8 @@ def consultar_modelo():
             ]
         )
 
-        # Acceder correctamente al contenido de la respuesta
-        response_content = response.choices[0].message['content']
+        # Acceder al contenido de la respuesta de forma correcta
+        response_content = response.choices[0].message.content
         response_json_openai = json.loads(response_content)
 
         # Retornar el objeto JSON en la respuesta
