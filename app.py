@@ -1,11 +1,9 @@
 from flask import Flask, jsonify, request
-from flask_cors import CORS  # Importa la extensión CORS
 from openai import OpenAI
 from datetime import datetime
 import json
 
 app = Flask(__name__)
-CORS(app)  # Habilita CORS para toda la aplicación
 application = app
 client = OpenAI()
 
@@ -41,6 +39,7 @@ def consultar_modelo():
                         "contiene características comunes de phishing (como enlaces sospechosos, urgencia inusual o solicitudes de "
                         "información personal). Si hay URLs, evalúa su seguridad y proporciona recomendaciones sobre ellas. "
                         "Proporciona una probabilidad entre 0 (no peligroso) y 1 (muy peligroso). "
+                        "No todo lo que tenga que ver con algun banco es seguro, si habla sobre creditos u productos aprobados puede ser una trampa, tenlo en cuenta. "
                         "Responde en el siguiente formato JSON: "
                         "{ "
                         "\"Calificación\": [número], "
