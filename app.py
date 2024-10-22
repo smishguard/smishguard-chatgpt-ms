@@ -1,6 +1,5 @@
 from flask import Flask, jsonify, request
 from openai import OpenAI
-from datetime import datetime
 import json
 
 app = Flask(__name__)
@@ -39,7 +38,7 @@ def consultar_modelo():
                         "contiene características comunes de phishing (como enlaces sospechosos, urgencia inusual o solicitudes de "
                         "información personal). Si hay URLs, evalúa su seguridad y proporciona recomendaciones sobre ellas. "
                         "Proporciona una probabilidad entre 0 (no peligroso) y 1 (muy peligroso). "
-                        "No todo lo que tenga que ver con algun banco es seguro, si habla sobre creditos u productos aprobados puede ser una trampa, tenlo en cuenta. "
+                        "No todo lo que tenga que ver con algún banco es seguro, si habla sobre créditos o productos aprobados puede ser una trampa, tenlo en cuenta. "
                         "Responde en el siguiente formato JSON: "
                         "{ "
                         "\"Calificación\": [número], "
@@ -54,16 +53,17 @@ def consultar_modelo():
             ]
         )
 
-        # Convertir la respuesta a JSON
-        response_content = response['choices'][0]['message']['content']
+        # Acceder correctamente al contenido de la respuesta
+        response_content = response.choices[0].message['content']
         response_json_openai = json.loads(response_content)
 
         # Retornar el objeto JSON en la respuesta
         return jsonify(response_json_openai)
 
     except Exception as e:
-        # Manejo de errores en caso de que ocurra una excepción
-        return jsonify({"error": str(e)}), 500
+        # Manejo de errores en caso de que ocurra una excepción y registro del error
+        app.logger.error(f"Error al consultar el modelo de OpenAI: {e}")
+        return jsonify({"error": "Ocurrió un error al procesar la solicitud.", "detalles": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
