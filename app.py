@@ -45,6 +45,7 @@ def consultar_modelo():
                         f"   - Análisis de ML: '{resultado_ml}'\n"
                         f"   - Análisis de URL: '{resultado_url}'\n\n"
                         "Usa todos estos valores para proporcionar un comentario corto consolidado que refleje el análisis combinado de los tres servicios. \n"
+                        "En el comentario no hables sobre tu analisis, solo responde con un comentario de acuerdo a los resultados de los tres servicios.\n\n"
                         "Responde en este formato JSON:\n"
                         "{\n"
                         "\"Calificación\": [valor entre 0 y 1 basado en tu análisis inicial del mensaje],\n"
