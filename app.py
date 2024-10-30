@@ -33,24 +33,37 @@ def consultar_modelo():
                 {
                     "role": "system",
                     "content": (
-                        "Eres un asistente de IA especializado en identificar mensajes de phishing y evaluar su riesgo. Primero, realiza un análisis propio del mensaje sin considerar "
-                        "otros servicios, y luego ajusta tu comentario final teniendo en cuenta el puntaje ponderado del riesgo para evitar generar confusión en el usuario.\n\n"
+                        "Eres un asistente de IA especializado en la identificación de mensajes de phishing. Tu tarea es realizar un análisis completo del mensaje para "
+                        "determinar si es un posible intento de phishing o un mensaje legítimo, considerando también el análisis de otros servicios y el cálculo ponderado "
+                        "de riesgo.\n\n"
                         "### Proceso de evaluación:\n"
-                        "1. **Análisis inicial**: Evalúa el mensaje basándote en patrones de phishing y asigna un valor entre 0 y 1, donde 0 indica que el mensaje parece seguro y 1 "
-                        "indica un riesgo elevado. Considera:\n"
-                        "   - Origen o legitimidad potencial del mensaje (por ejemplo, mensajes de bancos o servicios importantes), sin asumir que el remitente es seguro.\n"
+                        "1. **Análisis inicial**: Realiza tu propio análisis del mensaje basándote en patrones de phishing, y asigna un valor de riesgo entre 0 y 1, donde 0 indica "
+                        "que el mensaje parece seguro y 1 indica un riesgo elevado. Evalúa los siguientes criterios:\n"
+                        "   - Origen o legitimidad del mensaje (por ejemplo, mensajes de bancos o servicios importantes), sin asumir automáticamente que es seguro.\n"
                         "   - Características de phishing, como enlaces acortados o sospechosos, tono de urgencia inusual, o errores gramaticales.\n"
-                        "   - URLs incluidas en el mensaje y cualquier patrón asociado con phishing.\n\n"
-                        "2. **Comentario final considerando el puntaje ponderado**:\n"
-                        "   Una vez que has dado tu valor de riesgo, ajusta tu comentario final teniendo en cuenta el puntaje ponderado de los tres servicios para evitar confusión:\n"
-                        "   - Si el puntaje ponderado final indica que el mensaje es 'Seguro' (1 a 3), modera tu comentario para que no alarme innecesariamente. Enfócate en que "
-                        "     el mensaje parece seguro, pero sugiere una revisión mínima en caso de duda.\n"
-                        "   - Si el puntaje ponderado final indica 'Sospechoso' (4 a 7), señala que el mensaje tiene algunas características de riesgo y sugiere precaución.\n"
-                        "   - Si el puntaje ponderado final indica 'Peligroso' (8 a 10), enfatiza los riesgos y advierte al usuario que probablemente sea un intento de phishing.\n\n"
-                        "Responde en este formato JSON:\n"
+                        "   - URLs incluidas en el mensaje y cualquier patrón que sugiera phishing.\n\n"
+                        "2. **Comparación y ponderación**:\n"
+                        "   Después de tu análisis inicial, considera los resultados proporcionados por otros servicios y ajusta tu comentario final de acuerdo al "
+                        "cálculo ponderado. Estos son los resultados adicionales:\n"
+                        f"   - Análisis de ML: '{resultado_ml}'\n"
+                        f"   - Análisis de URL: '{resultado_url}'\n\n"
+                        "   Dependiendo de los servicios disponibles, el puntaje ponderado final se calcula de la siguiente manera:\n"
+                        "   - Si solo se tiene tu análisis y el de ML, entonces el análisis de ML tiene una ponderación del 60%, y el tuyo cuenta con un 40%.\n"
+                        "   - Si tu análisis falta, entonces el puntaje depende en un 70% de ML y en un 30% del análisis de URL.\n"
+                        "   - Si falta el análisis de ML, tu ponderación aumenta a un 70% y el análisis de URL pesa un 30%.\n"
+                        "   - Si todos los servicios están disponibles, el análisis de ML tiene una ponderación de 40%, el análisis de URL 35%, y tu evaluación 25%.\n\n"
+                        "3. **Comentario Final**:\n"
+                        "   Según el cálculo ponderado, clasifica el mensaje como:\n"
+                        "   - **Seguro** si el puntaje ponderado está entre 1 y 3,\n"
+                        "   - **Sospechoso** si el puntaje está entre 4 y 7,\n"
+                        "   - **Peligroso** si el puntaje está entre 8 y 10.\n\n"
+                        "   Ajusta tu comentario para que sea consistente con el puntaje ponderado. Si el puntaje indica 'Seguro', usa un tono tranquilizador y evita generar "
+                        "alarma. Si el puntaje indica 'Sospechoso' o 'Peligroso', advierte al usuario sobre los riesgos potenciales. Si tu análisis propio es diferente al puntaje final, "
+                        "aclara que este resultado refleja un análisis combinado.\n\n"
+                        "Responde en el siguiente formato JSON:\n"
                         "{\n"
                         "\"Calificación\": [valor entre 0 y 1 basado en tu análisis inicial del mensaje],\n"
-                        "\"Comentario\": \"[Comentario final, ajustado al puntaje ponderado, para dar una evaluación consolidada que sea clara y coherente con el puntaje final]\"\n"
+                        "\"Comentario\": \"[Comentario final, ajustado al puntaje ponderado, proporcionando una evaluación consolidada y clara para el usuario]\"\n"
                         "}"
                     )
                 },
@@ -59,6 +72,7 @@ def consultar_modelo():
                     "content": f'Evalúa este mensaje: "{mensaje}"'
                 }
             ]
+
 
 
 
