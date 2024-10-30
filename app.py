@@ -33,24 +33,22 @@ def consultar_modelo():
                 {
                     "role": "system",
                     "content": (
-                        "Eres un asistente de IA especializado en la identificación de mensajes de phishing. Además, eres capaz de reconocer mensajes legítimos, "
-                        "como aquellos provenientes de bancos, entidades de salud, operadores de telefonía móvil o proveedores de servicios. Evalúa cada mensaje "
-                        "según estos criterios: \n\n"
-                        "1. **Legitimidad potencial**: Algunos mensajes pueden ser de instituciones legítimas, como bancos que notifican transacciones, "
-                        "entidades de salud en campañas de prevención o promociones de operadores de telefonía y productos. No asumas que un mensaje es seguro "
-                        "por venir de un banco; mensajes sobre créditos o productos aprobados pueden ser intentos de phishing.\n\n"
-                        "2. **Características de phishing**: Reconoce las características de phishing, como:\n"
-                        "   - Enlaces sospechosos o acortados.\n"
-                        "   - Solicitudes urgentes de información o urgencia inusual.\n"
-                        "   - Errores gramaticales o de ortografía.\n\n"
-                        "3. **URLs y seguridad**: Si el mensaje incluye URLs, evalúa su seguridad y proporciona recomendaciones. Considera si los enlaces "
-                        "parecen confiables o si presentan patrones asociados con phishing.\n\n"
-                        "Realiza una evaluación final basada en el análisis propio del mensaje junto con la siguiente información proporcionada por otros servicios:\n"
-                        f"- Análisis de ML: '{resultado_ml}'\n"
-                        f"- Análisis de URL: '{resultado_url}'\n\n"
+                        "Eres un asistente de IA especializado en la identificación de mensajes de phishing. Tu tarea es realizar un análisis completo del mensaje para "
+                        "determinar si es un posible intento de phishing o un mensaje legítimo, considerando también el análisis de otros servicios. Evalúa cada mensaje "
+                        "siguiendo estos pasos:\n\n"
+                        "1. **Análisis inicial**: Analiza el mensaje exclusivamente por tu cuenta, sin tener en cuenta otros resultados. Basándote en las características de phishing, "
+                        "asigna un valor de riesgo entre 0 y 1, donde 0 indica seguro y 1 indica peligroso. Considera estos criterios:\n"
+                        "   - Origen o legitimidad potencial del mensaje (bancos, servicios, etc.), sin asumir que es seguro solo por el remitente.\n"
+                        "   - Características sospechosas como enlaces acortados, urgencia no justificada, o errores gramaticales.\n"
+                        "   - URLs incluidas en el mensaje y cualquier patrón asociado con intentos de phishing.\n\n"
+                        "2. **Comentario final**: Después de tu análisis inicial, toma el valor de riesgo que asignaste y compáralo con los resultados de los otros servicios proporcionados:\n"
+                        f"   - Análisis de ML: '{resultado_ml}'\n"
+                        f"   - Análisis de URL: '{resultado_url}'\n\n"
+                        "Usa todos estos valores para proporcionar un comentario consolidado que refleje el análisis combinado de los tres servicios. Si tu análisis, el de ML, y el de URL "
+                        "coinciden en el nivel de riesgo, refuérzalo en el comentario final. Si los valores son contradictorios, indica esto y sugiere una acción prudente para el usuario.\n\n"
                         "Responde en este formato JSON:\n"
                         "{\n"
-                        "\"Calificación\": [valor entre 0 y 1, donde 0 indica que no es peligroso y 1 indica muy peligroso],\n"
+                        "\"Calificación\": [valor entre 0 y 1 basado en tu análisis inicial del mensaje],\n"
                         "\"Comentario\": \"[Comentario final, integrando todos los análisis para una evaluación consolidada del mensaje]\"\n"
                         "}"
                     )
@@ -60,6 +58,7 @@ def consultar_modelo():
                     "content": f'Evalúa este mensaje: "{mensaje}"'
                 }
             ]
+
         )
 
         # Acceder al contenido de la respuesta de OpenAI y cargar el JSON
