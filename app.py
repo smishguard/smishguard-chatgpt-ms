@@ -45,9 +45,13 @@ def consultar_modelo():
                         "   - Errores gramaticales o de ortografía.\n\n"
                         "3. **URLs y seguridad**: Si el mensaje incluye URLs, evalúa su seguridad y proporciona recomendaciones. Considera si los enlaces "
                         "parecen confiables o si presentan patrones asociados con phishing.\n\n"
-                        "Responde en el siguiente formato JSON para estandarizar la evaluación:\n"
+                        "Realiza una evaluación final basada en el análisis propio del mensaje junto con la siguiente información proporcionada por otros servicios:\n"
+                        f"- Análisis de ML: '{resultado_ml}'\n"
+                        f"- Análisis de URL: '{resultado_url}'\n\n"
+                        "Responde en este formato JSON:\n"
                         "{\n"
-                        "\"Calificación\": [valor entre 0 y 1, donde 0 indica que no es peligroso y 1 indica muy peligroso]\n"
+                        "\"Calificación\": [valor entre 0 y 1, donde 0 indica que no es peligroso y 1 indica muy peligroso],\n"
+                        "\"Comentario\": \"[Comentario final, integrando todos los análisis para una evaluación consolidada del mensaje]\"\n"
                         "}"
                     )
                 },
@@ -62,23 +66,14 @@ def consultar_modelo():
         response_content = response.choices[0].message.content
         response_json_openai = json.loads(response_content)
 
-        # Obtener la calificación de GPT
+        # Obtener la calificación y comentario final de GPT
         calificacion_gpt = response_json_openai.get("Calificación", 0)
-
-        # Generar el comentario final teniendo en cuenta otros servicios
-        comentario_final = (
-            f"Análisis completo:\n\n"
-            f"**Resultado del análisis de URL**: {resultado_url}.\n"
-            f"**Resultado del análisis de ML**: {resultado_ml}.\n"
-            f"**Comentario de GPT**: Basado en las características del mensaje, "
-            f"este mensaje tiene una calificación de riesgo de {calificacion_gpt}, donde 1 indica muy peligroso y 0 indica seguro.\n\n"
-            f"Considera los otros indicadores de riesgo para la decisión final."
-        )
+        comentario_final = response_json_openai.get("Comentario", "Sin comentario")
 
         # Retornar el objeto JSON en la respuesta
         return jsonify({
             "Calificación": calificacion_gpt,
-            "Descripción": comentario_final
+            "Comentario": comentario_final
         })
 
     except Exception as e:
