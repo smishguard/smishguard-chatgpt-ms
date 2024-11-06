@@ -110,7 +110,7 @@ def conclucion_modelo():
                 },
                 {
                     "role": "user",
-                    "content": f'Dale una conclusion a este mensaje: "{resultado_final}"'
+                    "content": f'Dale una conclusión a este mensaje: "{resultado_final}"'
                 }
             ]
         )
