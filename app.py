@@ -86,7 +86,7 @@ def conclucion_modelo():
                 {
                     "role": "system",
                     "content": (
-                        "Imagina que estás analizando un mensaje de texto desde una perspectiva de seguridad cibernética. Recibes el análisis en una estructura que contiene varios elementos con los siguientes valores específicos:"
+                        "Estás analizando un mensaje de texto desde una perspectiva de seguridad cibernética. Recibes el análisis en una estructura que contiene varios elementos con los siguientes valores específicos:"
                         "valor_gpt: Valor adicional de la IA que proporciona información general."
                         "analisis_smishguard: Clasificación básica de seguridad del mensaje analizado (puede ser Seguro, Sospechoso o Peligroso)."
                         "enlace: URL analizada para ver su nivel de seguridad."
