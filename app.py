@@ -16,7 +16,6 @@ def ping():
 
 @app.route("/consultar-modelo-gpt", methods=['POST'])
 def consultar_modelo():
-    # Obtener el objeto JSON enviado en el cuerpo de la solicitud
     data = request.get_json()
     mensaje = data.get('mensaje', '')
 
@@ -24,7 +23,7 @@ def consultar_modelo():
         return jsonify({"error": "El campo 'mensaje' es obligatorio."}), 400
 
     try:
-        # Realizar la solicitud a la API de OpenAI
+        # Solicitud a la API de OpenAI
         response = client.chat.completions.create(
             model="gpt-3.5-turbo-0125",
             messages=[
@@ -43,10 +42,12 @@ def consultar_modelo():
                         "   - Errores gramaticales o de ortografía.\n\n"
                         "3. **URLs y seguridad**: Si el mensaje incluye URLs, evalúa su seguridad y proporciona recomendaciones. Considera si los enlaces "
                         "parecen confiables o si presentan patrones asociados con phishing.\n\n"
-                        "Responde en el siguiente formato JSON para estandarizar la evaluación:\n"
+                        "Responde en un formato JSON estricto.\n"
+                        "Formato de respuesta JSON esperado:\n"
                         "{\n"
-                        "\"Calificación\": [valor entre 0 y 1, donde 0 indica que no es peligroso y 1 indica muy peligroso],\n"
-                        "}"
+                        "\"Calificación\": valor entre 0 y 1 (no una lista), donde 0 indica que no es peligroso y 1 indica muy peligroso\n"
+                        "}\n"
+                        "Es importante que la respuesta sea solo este JSON y que \"Calificación\" sea un número, no una lista ni otro formato."
                     )
                 },
                 {
@@ -56,18 +57,41 @@ def consultar_modelo():
             ]
         )
 
-        # Acceder al contenido de la respuesta de forma correcta
+        # Procesar la respuesta de GPT
         response_content = response.choices[0].message.content
-        response_json_openai = json.loads(response_content)
 
-        # Retornar el objeto JSON en la respuesta
-        return jsonify(response_json_openai)
+        # Intentar cargar la respuesta como JSON
+        try:
+            response_json_openai = json.loads(response_content)
+            
+            # Validar que "Calificación" es un número y no una lista
+            calificacion = response_json_openai.get("Calificación", 0)
+            if isinstance(calificacion, list):
+                # Extraer el primer elemento si es una lista, y verificar si es numérico
+                calificacion = calificacion[0] if len(calificacion) > 0 else 0
+
+            # Convertir calificación a float si es numérico
+            if isinstance(calificacion, (int, float)):
+                response_json_openai["Calificación"] = float(calificacion)
+            else:
+                response_json_openai["Calificación"] = 0  # Fallback a 0 si el valor no es válido
+            
+            # Devolver el JSON corregido
+            return jsonify(response_json_openai)
+
+        except json.JSONDecodeError as e:
+            app.logger.error(f"Error al procesar JSON: {e}")
+            return jsonify({
+                "error": "Formato de respuesta incorrecto de GPT",
+                "detalles": str(e)
+            }), 500
 
     except Exception as e:
-        # Manejo de errores en caso de que ocurra una excepción y registro del error
         app.logger.error(f"Error al consultar el modelo de OpenAI: {e}")
-        return jsonify({"error": "Ocurrió un error al procesar la solicitud.", "detalles": str(e)}), 500
-        
+        return jsonify({
+            "error": "Ocurrió un error al procesar la solicitud.",
+            "detalles": str(e)
+        }), 500     
 
 @app.route("/conclusion-modelo-gpt", methods=['POST'])
 def conclucion_modelo():
@@ -115,15 +139,20 @@ def conclucion_modelo():
             ]
         )
 
-        # Acceder al contenido de la respuesta de forma correcta
+        # Intentar cargar la respuesta como JSON
         response_content = response.choices[0].message.content
-        response_json_openai = json.loads(response_content)
+        try:
+            response_json_openai = json.loads(response_content)
+            return jsonify(response_json_openai)
 
-        # Retornar el objeto JSON en la respuesta
-        return jsonify(response_json_openai)
+        except json.JSONDecodeError as e:
+            app.logger.error(f"Error al procesar JSON en conclusion-modelo-gpt: {e}")
+            return jsonify({
+                "error": "Formato de respuesta incorrecto de GPT",
+                "detalles": str(e)
+            }), 500
 
     except Exception as e:
-        # Manejo de errores en caso de que ocurra una excepción y registro del error
         app.logger.error(f"Error al consultar el modelo de OpenAI: {e}")
         return jsonify({"error": "Ocurrió un error al procesar la solicitud.", "detalles": str(e)}), 500
 
