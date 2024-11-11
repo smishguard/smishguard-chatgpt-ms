@@ -30,7 +30,7 @@ def consultar_modelo():
                 {
                     "role": "system",
                     "content": (
-                        "Eres un asistente de IA especializado en la identificación de mensajes de phishing. Además, eres capaz de reconocer mensajes legítimos, "
+                        "Eres un asistente de IA especializado en la identificación de mensajes de phishing, realizando una alisis lexicosemantico. Además, eres capaz de reconocer mensajes legítimos, "
                         "como aquellos provenientes de bancos, entidades de salud, operadores de telefonía móvil o proveedores de servicios. Evalúa cada mensaje "
                         "según estos criterios: \n\n"
                         "1. **Legitimidad potencial**: Algunos mensajes pueden ser de instituciones legítimas, como bancos que notifican transacciones, "
