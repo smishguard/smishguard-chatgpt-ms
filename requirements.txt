@@ -10,3 +10,4 @@ zipp==3.18.1
 gunicorn
 openai==1.42.0
 requests
+urllib3>=2.6.0 # not directly required, pinned by Snyk to avoid a vulnerability
